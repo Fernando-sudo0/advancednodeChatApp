@@ -18,6 +18,18 @@ app.route('/').get((req, res) => {
 res.render('index', {title : "Hello", message : "Please log in"});
 });
 
+//Create the variables session and passpor to require express-session and passport
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
+
+//Set up passport
+app.passport.initialize();
+app.passport.session();
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log('Listening on port ' + PORT);
