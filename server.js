@@ -3,7 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const myDB = require('./connection');
 const fccTesting = require('./freeCodeCamp/fcctesting.js');
-
+const session = require('express-session')
+const passport = require('passport')
 const app = express();
 
 fccTesting(app); //For FCC testing purposes
@@ -18,7 +19,7 @@ app.route('/').get((req, res) => {
 res.render('index', {title : "Hello", message : "Please log in"});
 });
 
-//Create the variables session and passpor to require express-session and passport
+//Create the variables session and passport to require express-session and passport
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: true,
@@ -27,8 +28,8 @@ app.use(session({
 }));
 
 //Set up passport
-app.passport.initialize();
-app.passport.session();
+app.use(passport.initialize());
+app.use(passport.session());
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
