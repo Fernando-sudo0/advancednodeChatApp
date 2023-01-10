@@ -13,8 +13,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'pug')
 app.set('views','./views/pug' )
+
 app.route('/').get((req, res) => {
-res.render('index')
+res.render('index', {title : "Hello", message : "2Please log in2"});
 });
 
 const PORT = process.env.PORT || 3000;
