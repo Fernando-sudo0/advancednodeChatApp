@@ -36,13 +36,41 @@ app.use(passport.session());
 
 
 
-myDB(async client => {
-  const myDataBase = await client.db('database').collection('users');
+myDB(async dbClient => {
 
-//Authentication strategies
-passport.use(new LocalStrategy((username, password, done) => {
+  const myDataBase = await dbClient.db('database').collection('users');
+
+
+
+  // Be sure to change the title
+  app.route('/').get((req, res) => {
+    // Change the response to render the Pug template
+    res.render('index', {
+      showLogin: true,
+      title: 'Connected to Database',
+      message: 'Please login'
+    });
+  });
+
+  app.route('/login').post((req, res) => {
+    passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
+      res.redirect('/profile');
+    }
+  });
+  app.route('/profile').get(ensureAuthenticated, (req,res) => {
+    res.render('profile');
+  })
+
+
+  //Authentication strategies
+  passport.use(new LocalStrategy((username, password, done) => {
+  
+    console.log('LocalStrategy', myDataBase)
+
   myDataBase.findOne({ username : username}, (err, user) => {
-    console.log(`User ${username} attempt to log in.`);
+    
+  console.log(`User ${username} attempt to log in.`);
+   
     if(err) return done(err );
     if(!user) return done(null, false);
     if(password !== user.password) return done(null, false);
@@ -51,16 +79,6 @@ passport.use(new LocalStrategy((username, password, done) => {
 }))
 //
 
-
-  // Be sure to change the title
-  app.route('/').get((req, res) => {
-    // Change the response to render the Pug template
-    res.render('index', {
-      title: 'Connected to Database',
-      message: 'Please login'
-    });
-  });
-
   // Serialization and deserialization here...
 
   passport.serializeUser((user, done) => {
@@ -68,7 +86,6 @@ passport.use(new LocalStrategy((username, password, done) => {
   });
   passport.deserializeUser((id, done) => {
     myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
-     
       done(null, doc);
     });
   });
@@ -80,7 +97,12 @@ passport.use(new LocalStrategy((username, password, done) => {
   });
 });
 // app.listen out here...
-
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/');
+};
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
