@@ -55,7 +55,7 @@ myDB(async client => {
   passport.deserializeUser((id, done) => {
     myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
      
-      done(err, doc);
+      done(null, doc);
     });
   });
 
