@@ -8,6 +8,7 @@ const fccTesting = require('./freeCodeCamp/fcctesting.js');
 const session = require('express-session')
 const passport = require('passport')
 const app = express();
+const LocalStrategy = require('passport-local');
 
 fccTesting(app); //For FCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -38,6 +39,19 @@ app.use(passport.session());
 myDB(async client => {
   const myDataBase = await client.db('database').collection('users');
 
+//Authentication strategies
+passport.use(new LocalStrategy((username, password, done) => {
+  myDataBase.findOne({ username : username}, (err, user) => {
+    console.log(`User ${username} attempt to log in.`);
+    if(err) return done(err );
+    if(!user) return done(null, false);
+    if(password !== user.password) return done(null, false);
+    return done(null, user);
+  })
+}))
+//
+
+
   // Be sure to change the title
   app.route('/').get((req, res) => {
     // Change the response to render the Pug template
@@ -66,7 +80,6 @@ myDB(async client => {
   });
 });
 // app.listen out here...
-
 
 
 const PORT = process.env.PORT || 3000;
