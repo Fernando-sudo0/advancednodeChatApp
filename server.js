@@ -40,8 +40,6 @@ myDB(async dbClient => {
 
   const myDataBase = await dbClient.db('database').collection('users');
 
-
-
   // Be sure to change the title
   app.route('/').get((req, res) => {
     // Change the response to render the Pug template
@@ -58,7 +56,6 @@ myDB(async dbClient => {
 );
   
   app.route('/profile').get(ensureAuthenticated, (req,res) => {
-    console.log(req.user)
     res.render('profile', {
       username : req.user.username
     });
