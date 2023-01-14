@@ -9,7 +9,7 @@ const session = require('express-session')
 const passport = require('passport')
 const app = express();
 const LocalStrategy = require('passport-local');
-
+const { ObjectID } = require('mongodb');
 fccTesting(app); //For FCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
@@ -58,7 +58,10 @@ myDB(async dbClient => {
 );
   
   app.route('/profile').get(ensureAuthenticated, (req,res) => {
-    res.render('profile');
+    console.log(req.user)
+    res.render('profile', {
+      username : req.user.username
+    });
   })
 
 
