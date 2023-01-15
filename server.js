@@ -68,6 +68,23 @@ myDB(async dbClient => {
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.route('/register')
 .post((req, res, next) =>{
    myDataBase.findOne({username : req.body.username}, (err, user)=>{
@@ -77,21 +94,23 @@ app.route('/register')
       res.redirect('/');
     } else {
       myDataBase.insertOne({ 
-        username: req.body.username,
+         username: req.body.username,
          password: req.body.password
         }, 
         (err, doc) =>{
         if(err){
           res.redirect('/');
-        }
-        else{
+        } else {
+            // The inserted document is held within
+            // the ops property of the doc
           next(null, doc.ops[0]);
         }
-      })
+      }
+      )
     }      
    })
 }, 
-passport.authenticate('local', {failureRedirect: '/'}),
+passport.authenticate('local', { failureRedirect: '/' }),
  (req, res, next)=>{
  res.redirect('/profile')
 }
