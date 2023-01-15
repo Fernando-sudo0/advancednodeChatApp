@@ -46,10 +46,10 @@ myDB(async dbClient => {
   app.route('/').get((req, res) => {
     // Change the response to render the Pug template
     res.render('index', {
-      showRegistration: true,
-      showLogin: true,
       title: 'Connected to Database',
-      message: 'Please login'
+      message: 'Please login', 
+      showLogin: true,
+      showRegistration: true,
     });
   });
 
@@ -89,7 +89,7 @@ myDB(async dbClient => {
             res.redirect('/')
           else
         
-            next(null, doc)
+            next(null,doc.ops[0])
         })
       }      
      })
