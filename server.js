@@ -67,12 +67,13 @@ myDB(async dbClient => {
     res.redirect('/');
 });
 
-  app.route('/register').post((req, res, next) =>{
+
+  app.route('/register')
+  .post((req, res, next) =>{
     //1. Register the new user
     //1.1 Query database with findOne
-    const {username, password} = req.body
 
-     myDataBase.findOne({username : username}, function(err, doc){
+     myDataBase.findOne({username : req.body.username}, function(err, doc){
        //1.2 If there's an error, call next with error
       if(err)
         next(err)
@@ -83,7 +84,7 @@ myDB(async dbClient => {
         //    authenticating the new user, which you already wrote the logic  
         //    for in your POST /login route.  
       }else{
-        myDataBase.insertOne({username : username, password : password}, function(err, doc) {
+        myDataBase.insertOne({username : req.body.username, password : req.body.password}, function(err, doc) {
           if(err)
             res.redirect('/')
           else
