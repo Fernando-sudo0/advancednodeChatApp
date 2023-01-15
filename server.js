@@ -11,7 +11,7 @@ const app = express();
 const LocalStrategy = require('passport-local');
 const { ObjectID } = require('mongodb');
 const e = require('express');
-
+const bcrypt = require('bcrypt')
 fccTesting(app); //For FCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
