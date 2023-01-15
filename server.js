@@ -76,7 +76,7 @@ app.route('/register')
    myDataBase.findOne({username : req.body.username}, (err, user)=>{
      //1.2 If there's an error, call next with error
     if(err)
-      next(err)
+      next(err);
       //1.3 If a user is returned, redirect back to home
     else if(user){
       res.redirect('/')
@@ -86,10 +86,9 @@ app.route('/register')
     }else{
       myDataBase.insertOne({username : req.body.username, password : req.body.password}, (err, doc) =>{
         if(err)
-          res.redirect('/')
+          res.redirect('/');
         else
-      
-          next(null,doc.ops[0])
+          next(null,doc.ops[0]);
       })
     }      
    })
