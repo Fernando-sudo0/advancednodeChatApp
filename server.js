@@ -68,39 +68,36 @@ myDB(async dbClient => {
 });
 
 
-  app.route('/register')
-  .post((req, res, next) =>{
-    //1. Register the new user
-    //1.1 Query database with findOne
-
-     myDataBase.findOne({username : req.body.username}, function(err, doc){
-       //1.2 If there's an error, call next with error
-      if(err)
-        next(err)
-        //1.3 If a user is returned, redirect back to home
-      else if(doc ){
-        res.redirect('/')
-        //1.4 If a user is not found and no error ocurr, then insert One.
-        //    authenticating the new user, which you already wrote the logic  
-        //    for in your POST /login route.  
-      }else{
-        myDataBase.insertOne({username : req.body.username, password : req.body.password}, function(err, doc) {
-          if(err)
-            res.redirect('/')
-          else
-        
-            next(null,doc.ops[0])
-        })
-      }      
-     })
-  }, 
-  //    As long as no errors occur there, call next to go to step 2, 
-  //2 . Authenticate the new user
-  passport.authenticate('local', {failureRedirect: '/'}), (req, res, next)=>{
-    //Redirect to profile
-   res.redirect('/profile')
+app.route('/register')
+.post((req, res, next) => {
+  myDataBase.findOne({ username: req.body.username }, (err, user) => {
+    if (err) {
+      next(err);
+    } else if (user) {
+      res.redirect('/');
+    } else {
+      myDataBase.insertOne({
+        username: req.body.username,
+        password: req.body.password
+      },
+        (err, doc) => {
+          if (err) {
+            res.redirect('/');
+          } else {
+            // The inserted document is held within
+            // the ops property of the doc
+            next(null, doc.ops[0]);
+          }
+        }
+      )
+    }
+  })
+},
+  passport.authenticate('local', { failureRedirect: '/' }),
+  (req, res, next) => {
+    res.redirect('/profile');
   }
-  );
+);
 
 app.use((req, res, next) => {
   res.status(404)
