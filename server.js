@@ -78,18 +78,22 @@ app.route('/register')
     else if(user){
       res.redirect('/')
     }else{
-      myDataBase.insertOne({username : req.body.username, password : req.body.password}, (err, doc) =>{
-        if(err)
+      myDataBase.insertOne({username : req.body.username, password : req.body.password}, 
+        (err, doc) =>{
+        if(err){
           res.redirect('/');
-        else
+        }
+        else{
           next(null,doc.ops[0]);
+        }
       })
     }      
    })
 }, 
 //    As long as no errors occur there, call next to go to step 2, 
 //2 . Authenticate the new user
-passport.authenticate('local', {failureRedirect: '/'}), (req, res, next)=>{
+passport.authenticate('local', {failureRedirect: '/'}),
+ (req, res, next)=>{
   //Redirect to profile
  res.redirect('/profile')
 }
