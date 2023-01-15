@@ -67,24 +67,6 @@ myDB(async dbClient => {
     res.redirect('/');
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 app.route('/register')
 .post((req, res, next) =>{
   //1. Register the new user
@@ -102,7 +84,8 @@ app.route('/register')
       //    authenticating the new user, which you already wrote the logic  
       //    for in your POST /login route.  
     }else{
-      myDataBase.insertOne({ username: req.body.username, password: req.body.password }, (err, doc) => {
+      const hash = bcrypt.hashSync(req.body.password, 12);
+      myDataBase.insertOne({ username: req.body.username, password: hash }, (err, doc) => {
         if(err){
           res.redirect('/');
         }
@@ -138,7 +121,12 @@ app.use((req, res, next) => {
    
     if(err) return done(err );
     if(!user) return done(null, false);
-    if(password !== user.password) return done(null, false);
+
+    if (!bcrypt.compareSync(password, user.password)) { 
+      return done(null, false);
+    }
+    
+    // if(password !== user.password) return done(null, false);s
     return done(null, user);
   })
 }))
