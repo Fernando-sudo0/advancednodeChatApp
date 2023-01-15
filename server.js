@@ -71,14 +71,13 @@ myDB(async dbClient => {
 app.route('/register')
 .post((req, res, next) =>{
    myDataBase.findOne({username : req.body.username}, (err, user)=>{
-     //1.2 If there's an error, call next with error
     if(err){
       next(err);
     }
     else if(user){
-      res.redirect('/')
+      res.redirect('/');
     }else{
-      myDataBase.insertOne({username : req.body.username, password : req.body.password}, 
+      myDataBase.insertOne({ username: req.body.username, password: req.body.password}, 
         (err, doc) =>{
         if(err){
           res.redirect('/');
@@ -90,11 +89,8 @@ app.route('/register')
     }      
    })
 }, 
-//    As long as no errors occur there, call next to go to step 2, 
-//2 . Authenticate the new user
 passport.authenticate('local', {failureRedirect: '/'}),
  (req, res, next)=>{
-  //Redirect to profile
  res.redirect('/profile')
 }
 );
