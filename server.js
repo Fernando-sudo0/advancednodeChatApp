@@ -10,6 +10,8 @@ const passport = require('passport')
 const app = express();
 const LocalStrategy = require('passport-local');
 const { ObjectID } = require('mongodb');
+const e = require('express');
+
 fccTesting(app); //For FCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
@@ -44,6 +46,7 @@ myDB(async dbClient => {
   app.route('/').get((req, res) => {
     // Change the response to render the Pug template
     res.render('index', {
+      showRegistration: true,
       showLogin: true,
       title: 'Connected to Database',
       message: 'Please login'
@@ -63,6 +66,40 @@ myDB(async dbClient => {
     req.logout();
     res.redirect('/');
 });
+
+  app.route('/register').post((req, res, next) =>{
+    //1. Register the new user
+    //1.1 Query database with findOne
+    const {username, password} = req.body
+
+     myDataBase.findOne({username : username}, function(err, doc){
+       //1.2 If there's an error, call next with error
+      if(err)
+        next(err)
+        //1.3 If a user is returned, redirect back to home
+      else if(doc ){
+        res.redirect('/')
+        //1.4 If a user is not found and no error ocurr, then insert One.
+        //    authenticating the new user, which you already wrote the logic  
+        //    for in your POST /login route.  
+      }else{
+        myDataBase.insertOne({username : username, password : password}, function(err, doc) {
+          if(err)
+            res.redirect('/')
+          else
+        
+            next(null, doc)
+        })
+      }      
+     })
+  }, 
+  //    As long as no errors occur there, call next to go to step 2, 
+  //2 . Authenticate the new user
+  passport.authenticate('local', {failureRedirect: '/'}), (req, res, next)=>{
+    //Redirect to profile
+   res.redirect('/profile')
+  }
+  );
 
 app.use((req, res, next) => {
   res.status(404)
