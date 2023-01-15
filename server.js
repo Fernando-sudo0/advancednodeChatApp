@@ -90,23 +90,25 @@ app.route('/register')
   //1. Register the new user
   //1.1 Query database with findOne
 
-   myDataBase.findOne({ username : req.body.username }, function(err, doc){
+   myDataBase.findOne({ username : req.body.username }, (err, user) => {
      //1.2 If there's an error, call next with error
-    if(err)
-      next(err)
+    if(err){
+      next(err);
+    }
       //1.3 If a user is returned, redirect back to home
-    else if(doc ){
+    else if(user ){
       res.redirect('/');
       //1.4 If a user is not found and no error ocurr, then insert One.
       //    authenticating the new user, which you already wrote the logic  
       //    for in your POST /login route.  
     }else{
-      myDataBase.insertOne({ username : req.body.username, password : req.body.password }, function(err, doc) {
-        if(err)
+      myDataBase.insertOne({ username: req.body.username, password: req.body.password }, (err, doc) => {
+        if(err){
           res.redirect('/');
-        else
-      
+        }
+        else{
           next(null, doc.ops[0]);
+        }
       })
     }      
    })
